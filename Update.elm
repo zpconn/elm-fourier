@@ -4,7 +4,7 @@ import Actions exposing (..)
 import Complex exposing (toComplex)
 import Fourier exposing (computeFourierCoefficients, fourierPoint)
 import Effects exposing (Effects)
-import Time exposing (Time, inSeconds)
+import Time exposing (Time, second, inSeconds)
 import Mouse
 
 
@@ -12,8 +12,8 @@ defaultSampleRange : Int
 defaultSampleRange = 10
 
 
-defaultLoopDuration : Int
-defaultLoopDuration = 20
+defaultLoopDuration : Time
+defaultLoopDuration = 20 * Time.second
 
 
 update : Action -> Model -> (Model, Effects Action)
@@ -27,7 +27,7 @@ update msg model =
 
         Tick timeDelta ->
             let
-                incrementedClock = model.normalizedClock + ( (Time.inSeconds timeDelta) / (toFloat defaultLoopDuration) )
+                incrementedClock = model.normalizedClock + ( (Time.inSeconds timeDelta) / (Time.inSeconds defaultLoopDuration) )
 
                 newNormalizedClock = if incrementedClock <= 1.0 then
                                           incrementedClock
