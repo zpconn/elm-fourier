@@ -1,5 +1,6 @@
 import StartApp
 import Mouse
+import Time exposing (fps)
 import View exposing (view)
 import Model exposing (initial)
 import Update exposing (update)
@@ -16,7 +17,9 @@ app =
         , update = update
         , view = view
         , inputs = 
-            [ addPointSignal ]
+            [ addPointSignal
+            , Signal.map Tick (Time.fps 60)
+            ]
         }
 
 

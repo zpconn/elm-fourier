@@ -18,6 +18,7 @@ type alias Model =
     , height : Int
     , points : List (Int,Int)
     , state : State
+    , normalizedClock : Float
     , animationState : AnimationState
     , fourierCoefficients : FourierCoefficients
     }
@@ -29,6 +30,7 @@ initial (w,h) =
       , height = h
       , points = []
       , state = Playing
+      , normalizedClock = 0.0
       , animationState = Nothing
       , fourierCoefficients = { sampleRange = 0, coefficients = [] }
       }

@@ -2,14 +2,18 @@ module Update (update) where
 import Model exposing (..)
 import Actions exposing (..)
 import Complex exposing (toComplex)
-import Fourier exposing (computeFourierCoefficients)
+import Fourier exposing (computeFourierCoefficients, fourierPoint)
 import Effects exposing (Effects)
-import Time exposing (Time)
+import Time exposing (Time, inSeconds)
 import Mouse
 
 
 defaultSampleRange : Int
 defaultSampleRange = 10
+
+
+defaultLoopDuration : Int
+defaultLoopDuration = 20
 
 
 update : Action -> Model -> (Model, Effects Action)
@@ -21,8 +25,20 @@ update msg model =
         Load encodedModel ->
             (model, Effects.none)
 
-        Tick time ->
-            (model, Effects.none)
+        Tick timeDelta ->
+            let
+                incrementedClock = model.normalizedClock + ( (Time.inSeconds timeDelta) / (toFloat defaultLoopDuration) )
+
+                newNormalizedClock = if incrementedClock <= 1.0 then
+                                          incrementedClock
+                                     else
+                                          0.0 + (incrementedClock - 1.0)
+
+                currentPoint = fourierPoint model.fourierCoefficients newNormalizedClock
+
+                newModel = { model | normalizedClock = newNormalizedClock }
+            in
+                (newModel, Effects.none)
             
         AddPoint (x, y) ->
             let
