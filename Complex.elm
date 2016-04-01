@@ -1,4 +1,4 @@
-module Complex (Complex(..), add, mul, exp, purelyReal, purelyImag, toComplex) where
+module Complex (Complex(..), add, sub, mul, exp, purelyReal, purelyImag, toComplex) where
 
 
 type Complex = Complex Float Float
@@ -7,6 +7,11 @@ type Complex = Complex Float Float
 add : Complex -> Complex -> Complex
 add (Complex a b) (Complex c d) =
     Complex (a + c) (b + d)
+
+
+sub : Complex -> Complex -> Complex
+sub (Complex a b) (Complex c d) =
+    Complex (a - c) (b - d)
 
 
 mul : Complex -> Complex -> Complex

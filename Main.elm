@@ -13,7 +13,7 @@ addPointSignal = Signal.map AddPoint (Signal.sampleOn Mouse.clicks Mouse.positio
 
 app =
     StartApp.start
-        { init = initial (500, 500)
+        { init = initial (1000, 1000)
         , update = update
         , view = view
         , inputs = 

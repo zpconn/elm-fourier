@@ -27,6 +27,18 @@ fourierCoefficient n zs =
         Complex.mul ( Complex.purelyReal (1 / (toFloat numSamples)) ) sum
 
 
+-- This may not be needed.
+recenterSamplePoints : Samples -> (Int, Int) -> Samples
+recenterSamplePoints zs (w,h) =
+    let
+        center = Complex ((toFloat w) / 2) ((toFloat h) / 2)
+
+        recenterPoint : Complex -> Complex
+        recenterPoint p = Complex.sub p center
+    in
+        List.map recenterPoint zs
+
+
 computeFourierCoefficients : Samples -> Int -> FourierCoefficients
 computeFourierCoefficients zs sampleRange =
     let
@@ -49,5 +61,13 @@ fourierPoint {sampleRange, coefficients} t =
         products = flip List.map (List.map2 (,) indices coefficients) (\(n, c) -> Complex.mul c (expTerm n))
     in
         List.foldr Complex.add (Complex.purelyReal 0) products
+
+
+approximateFourierPath : FourierCoefficients -> Int -> List (Complex)
+approximateFourierPath coeffs numPoints =
+    let
+        ts = List.map (\i -> (toFloat i) / (toFloat (numPoints - 1))) [0..numPoints-1]
+    in
+        List.map (\t -> fourierPoint coeffs t) ts
 
 

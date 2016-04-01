@@ -9,11 +9,11 @@ import Mouse
 
 
 defaultSampleRange : Int
-defaultSampleRange = 10
+defaultSampleRange = 50 
 
 
 defaultLoopDuration : Time
-defaultLoopDuration = 20 * Time.second
+defaultLoopDuration = 5 * Time.second
 
 
 update : Action -> Model -> (Model, Effects Action)
@@ -36,7 +36,9 @@ update msg model =
 
                 currentPoint = fourierPoint model.fourierCoefficients newNormalizedClock
 
-                newModel = { model | normalizedClock = newNormalizedClock }
+                newModel = { model |
+                               normalizedClock = newNormalizedClock,
+                               currentPoint = Just currentPoint }
             in
                 (newModel, Effects.none)
             
@@ -44,9 +46,13 @@ update msg model =
             let
                 newPointList = (x, y) :: model.points
 
+                loopedBackPoints = case (List.head model.points) of
+                                       Just p -> p :: newPointList
+                                       Nothing -> newPointList
+
                 newFourierCoefficients =
-                    computeFourierCoefficients (List.map Complex.toComplex newPointList)
-                                               defaultSampleRange
+                    computeFourierCoefficients (List.map Complex.toComplex loopedBackPoints)
+                                               (round ((toFloat (List.length loopedBackPoints)) / 5.0))
                                                
                 newModel = { model |
                                points = newPointList,

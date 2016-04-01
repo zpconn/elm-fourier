@@ -2,7 +2,7 @@ module Model (Model, State(..), AnimationState, initial) where
 import Time exposing (Time)
 import Effects exposing (Effects)
 import Actions exposing (Action)
-import Complex
+import Complex exposing (Complex(..))
 import Fourier exposing (FourierCoefficients)
 
 
@@ -21,6 +21,7 @@ type alias Model =
     , normalizedClock : Float
     , animationState : AnimationState
     , fourierCoefficients : FourierCoefficients
+    , currentPoint : Maybe Complex
     }
 
 
@@ -33,6 +34,7 @@ initial (w,h) =
       , normalizedClock = 0.0
       , animationState = Nothing
       , fourierCoefficients = { sampleRange = 0, coefficients = [] }
+      , currentPoint = Nothing
       }
     , Effects.none )
 
