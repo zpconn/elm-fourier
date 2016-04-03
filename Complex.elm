@@ -1,4 +1,4 @@
-module Complex (Complex(..), add, sub, mul, exp, purelyReal, purelyImag, toComplex) where
+module Complex (Complex(..), add, sub, mul, exp, purelyReal, purelyImag, toComplex, mag) where
 
 
 type Complex = Complex Float Float
@@ -31,10 +31,14 @@ purelyReal x =
 
 purelyImag : Float -> Complex
 purelyImag x =
-    Complex 0 x
+    Complex 0.0 x
 
 
 toComplex : (Int, Int) -> Complex
 toComplex (x, y) = Complex (toFloat x) (toFloat y)
+
+
+mag : Complex -> Float
+mag (Complex x y) = sqrt (x*x + y*y)
 
 

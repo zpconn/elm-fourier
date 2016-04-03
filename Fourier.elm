@@ -1,4 +1,4 @@
-module Fourier (computeFourierCoefficients, fourierPoint, FourierCoefficients) where
+module Fourier (computeFourierCoefficients, fourierPoint, FourierCoefficients, Circle(..), computeCirclesFromCoefficients, recenterSamplePoints) where
 import Complex exposing (Complex(..))
 
 
@@ -9,6 +9,9 @@ type alias FourierCoefficients =
     { sampleRange : Int
     , coefficients : List (Complex)
     }
+
+
+type Circle = Circle Complex Float
 
 
 fourierCoefficient : Int -> Samples -> Complex
@@ -27,7 +30,6 @@ fourierCoefficient n zs =
         Complex.mul ( Complex.purelyReal (1 / (toFloat numSamples)) ) sum
 
 
--- This may not be needed.
 recenterSamplePoints : Samples -> (Int, Int) -> Samples
 recenterSamplePoints zs (w,h) =
     let
@@ -49,18 +51,22 @@ computeFourierCoefficients zs sampleRange =
         }
 
 
-fourierPoint : FourierCoefficients -> Float -> Complex
-fourierPoint {sampleRange, coefficients} t =
+partialSum : FourierCoefficients -> Float -> Int -> Complex
+partialSum {sampleRange, coefficients} t stopIdx =
     let
         expTerm : Int -> Complex
         expTerm n =
             Complex.exp ( 2 * pi * (toFloat n) * t )
 
-        indices = [-sampleRange..sampleRange]
+        indices = [-sampleRange..stopIdx]
 
         products = flip List.map (List.map2 (,) indices coefficients) (\(n, c) -> Complex.mul c (expTerm n))
     in
         List.foldr Complex.add (Complex.purelyReal 0) products
+
+
+fourierPoint : FourierCoefficients -> Float -> Complex
+fourierPoint coeffs t = partialSum coeffs t coeffs.sampleRange
 
 
 approximateFourierPath : FourierCoefficients -> Int -> List (Complex)
@@ -69,5 +75,17 @@ approximateFourierPath coeffs numPoints =
         ts = List.map (\i -> (toFloat i) / (toFloat (numPoints - 1))) [0..numPoints-1]
     in
         List.map (\t -> fourierPoint coeffs t) ts
+
+
+computeCirclesFromCoefficients : FourierCoefficients -> Float -> List (Circle)
+computeCirclesFromCoefficients coeffs t =
+    let
+        indices = [-coeffs.sampleRange..coeffs.sampleRange]
+
+        partialSums = List.map (partialSum coeffs t) indices
+
+        shiftedPartialSums = (Complex 0 0) :: partialSums
+    in
+        List.map2 (\c s -> Circle s (Complex.mag c)) coeffs.coefficients shiftedPartialSums
 
 

@@ -2,7 +2,7 @@ module Update (update) where
 import Model exposing (..)
 import Actions exposing (..)
 import Complex exposing (toComplex)
-import Fourier exposing (computeFourierCoefficients, fourierPoint)
+import Fourier exposing (computeFourierCoefficients, fourierPoint, recenterSamplePoints)
 import Effects exposing (Effects)
 import Time exposing (Time, second, inSeconds)
 import Mouse
@@ -27,18 +27,17 @@ update msg model =
 
         Tick timeDelta ->
             let
-                incrementedClock = model.normalizedClock + ( (Time.inSeconds timeDelta) / (Time.inSeconds defaultLoopDuration) )
+                dt = (Time.inSeconds timeDelta) / (Time.inSeconds defaultLoopDuration)
 
-                newNormalizedClock = if incrementedClock <= 1.0 then
-                                          incrementedClock
-                                     else
-                                          0.0 + (incrementedClock - 1.0)
+                newNormalizedClock = advanceNormalizedClock model.normalizedClock dt
 
-                currentPoint = fourierPoint model.fourierCoefficients newNormalizedClock
+                currentPoint = case (clockToFloat newNormalizedClock) of
+                                   Just t -> Just (fourierPoint model.fourierCoefficients t)
+                                   Nothing -> Nothing
 
                 newModel = { model |
                                normalizedClock = newNormalizedClock,
-                               currentPoint = Just currentPoint }
+                               currentPoint = currentPoint }
             in
                 (newModel, Effects.none)
             
@@ -50,9 +49,13 @@ update msg model =
                                        Just p -> p :: newPointList
                                        Nothing -> newPointList
 
+                recenteredComplexPoints = 
+                    recenterSamplePoints (List.map Complex.toComplex loopedBackPoints)
+                                         (model.width, model.height)
+
                 newFourierCoefficients =
-                    computeFourierCoefficients (List.map Complex.toComplex loopedBackPoints)
-                                               (round ((toFloat (List.length loopedBackPoints)) / 5.0))
+                    computeFourierCoefficients recenteredComplexPoints
+                                               (round ((toFloat (List.length recenteredComplexPoints)) / 5.0))
                                                
                 newModel = { model |
                                points = newPointList,
