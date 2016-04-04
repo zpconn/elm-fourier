@@ -13,7 +13,7 @@ defaultSampleRange = 50
 
 
 defaultLoopDuration : Time
-defaultLoopDuration = 5 * Time.second
+defaultLoopDuration = 30 * Time.second
 
 
 update : Action -> Model -> (Model, Effects Action)
@@ -38,6 +38,7 @@ update msg model =
                 newModel = { model |
                                normalizedClock = newNormalizedClock,
                                currentPoint = currentPoint }
+
             in
                 (newModel, Effects.none)
             
