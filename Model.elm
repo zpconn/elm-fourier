@@ -1,4 +1,4 @@
-module Model (Model, State(..), AnimationState, initial, NormalizedClock(..), clockToFloat, advanceNormalizedClock, encodePointList) where
+module Model (Model, State(..), AnimationState, initial, NormalizedClock(..), clockToFloat, advanceNormalizedClock, encodePointList, decodePointList) where
 import Time exposing (Time)
 import Effects exposing (Effects)
 import String exposing (concat)

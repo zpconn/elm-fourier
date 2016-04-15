@@ -1,6 +1,8 @@
 import StartApp
 import Mouse
 import Time exposing (fps)
+import Task exposing (Task)
+import Effects exposing (Never)
 import View exposing (view)
 import Model exposing (initial)
 import Update exposing (update)
@@ -21,6 +23,11 @@ app =
             , Signal.map Tick (Time.fps 60)
             ]
         }
+
+
+port tasks : Signal (Task.Task Never ())
+port tasks =
+    app.tasks
 
 
 main =

@@ -9,5 +9,6 @@ type Action
     | AddPoint (Int, Int)
     | Pause
     | Resume
+    | HashUpdated (Maybe String)
 
 
