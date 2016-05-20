@@ -1,0 +1,3 @@
+elm-fourier is an implementation of the ideas from my [blog post](http://www.zachconn.com/posts/2015-06-21-generating-closed-plane-curves-with-orbiting-planetary-systems.html) on generating closed plane curves from orbiting planetary systems using the purely functional language Elm.
+
+Although there are several additional features planned, this is a fairly complete demonstration already of the construction described mathematically in that post. When running this, simply start clicking around the screen to place points and watch the orbiting planetary system be automatically constructed in real-time.
