@@ -1,10 +1,9 @@
-module Model (Model, State(..), AnimationState, initial, NormalizedClock(..), clockToFloat, advanceNormalizedClock, encodePointList, decodePointList) where
+module Model exposing (Model, State(..), AnimationState, initial, NormalizedClock(..), clockToFloat, advanceNormalizedClock, encodePointList, decodePointList)
 import Time exposing (Time)
-import Effects exposing (Effects)
 import String exposing (concat)
 import Json.Encode exposing (encode, object, int, list, Value)
-import Json.Decode exposing (Decoder, int, object2, decodeString, (:=))
-import Actions exposing (Action)
+import Json.Decode exposing (Decoder, int, map2, decodeString, field)
+import Actions exposing (Msg)
 import Complex exposing (Complex(..))
 import Fourier exposing (FourierCoefficients)
 
@@ -52,8 +51,8 @@ type alias Model =
     }
 
 
-initial : (Int, Int) -> (Model, Effects Action)
-initial (w,h) = 
+initial : (Int, Int) -> (Model, Cmd Msg)
+initial (w,h) =
     ( { width = w
       , height = h
       , points = []
@@ -63,7 +62,7 @@ initial (w,h) =
       , fourierCoefficients = { sampleRange = 0, coefficients = [] }
       , currentPoint = Nothing
       }
-    , Effects.none )
+    , Cmd.none )
 
 
 pointToJSONObj : (Int,Int) -> Json.Encode.Value
@@ -81,9 +80,9 @@ encodePointList points =
 
 pointDecoder : Json.Decode.Decoder (Int,Int)
 pointDecoder =
-    Json.Decode.object2 (,)
-        ("x" := Json.Decode.int)
-        ("y" := Json.Decode.int)
+    Json.Decode.map2 (,)
+        (field "x" Json.Decode.int)
+        (field "y" Json.Decode.int)
 
 
 pointListDecoder : Json.Decode.Decoder (List (Int,Int))

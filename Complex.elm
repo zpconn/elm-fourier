@@ -1,4 +1,4 @@
-module Complex (Complex(..), add, sub, mul, exp, purelyReal, purelyImag, toComplex, mag) where
+module Complex exposing (Complex(..), add, sub, mul, exp, purelyReal, purelyImag, toComplex, mag)
 
 
 type Complex = Complex Float Float

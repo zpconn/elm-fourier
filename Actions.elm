@@ -1,14 +1,12 @@
-module Actions (Action(..)) where
-import Time exposing (Time)
+module Actions exposing (Msg(..))
+import Mouse exposing (Position)
 
 
-type Action
-    = Init Time
-    | Load String
-    | Tick Time
-    | AddPoint (Int, Int)
+type Msg
+    = Load String
+    | Tick Float
+    | AddPoint Mouse.Position
     | Pause
     | Resume
-    | HashUpdated (Maybe String)
 
 

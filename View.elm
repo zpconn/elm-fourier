@@ -1,13 +1,11 @@
-module View (view) where
+module View exposing (view)
 import Color exposing (..)
-import Graphics.Collage exposing (..)
-import Graphics.Element exposing (..)
-import Mouse
-import Window
-import Html exposing (div, Html, text, button, fromElement)
+import Element exposing (..)
+import Collage exposing (..)
+import Html exposing (div, Html, text, button)
 import Html.Events exposing (onClick)
 import Model exposing (Model, NormalizedClock(..), clockToFloat)
-import Actions exposing (Action)
+import Actions exposing (Msg)
 import Complex exposing (Complex(..))
 import Fourier exposing (Circle(..), computeCirclesFromCoefficients)
 
@@ -20,7 +18,7 @@ drawCircles : (Int,Int) -> List (Circle) -> List (Form)
 drawCircles (w,h) circles =
     let
         constructCircle : Circle -> Form
-        constructCircle (Circle (Complex x y) r) = 
+        constructCircle (Circle (Complex x y) r) =
             circle r |> outlined defaultLine
                      |> move (x, -y)
     in
@@ -28,7 +26,7 @@ drawCircles (w,h) circles =
 
 
 drawPoint : (Int,Int) -> ((Int,Int),Color) -> Form
-drawPoint (w,h) ((x,y),color) = 
+drawPoint (w,h) ((x,y),color) =
     circle pointRadius
       |> filled color
       |> move (toFloat x - toFloat w / 2, toFloat h / 2 - toFloat y)
@@ -36,7 +34,7 @@ drawPoint (w,h) ((x,y),color) =
 
 drawSamplePath : (Int,Int) -> List (Int,Int) -> Form
 drawSamplePath (w,h) locs =
-    let 
+    let
         points = flip List.map locs (\(x,y) -> (toFloat x - toFloat w / 2, toFloat h / 2 - toFloat y))
 
         samplePath = path points
@@ -62,7 +60,7 @@ drawEverything (w,h) locs currentPoint model =
                       Just t -> computeCirclesFromCoefficients model.fourierCoefficients t
                       Nothing -> []
 
-        elements = (List.map (drawPoint (w,h)) newColoredLocs) ++ 
+        elements = (List.map (drawPoint (w,h)) newColoredLocs) ++
                    (drawCircles (w,h) circles) ++
                    [drawSamplePath (w,h) locs]
     in
@@ -70,10 +68,10 @@ drawEverything (w,h) locs currentPoint model =
           [ collage w h elements ]
 
 
-view : Signal.Address Action -> Model -> Html
-view address model =
-    div 
+view : Model -> Html Msg
+view model =
+    div
         []
-        [ fromElement (drawEverything (model.width, model.height) model.points model.currentPoint model) ]
+        [ toHtml <| (drawEverything (model.width, model.height) model.points model.currentPoint model) ]
 
 

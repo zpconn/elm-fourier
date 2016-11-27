@@ -1,26 +1,23 @@
-module Update (update) where
+module Update exposing (update)
 import Model exposing (..)
 import Actions exposing (..)
 import Complex exposing (toComplex)
 import Fourier exposing (computeFourierCoefficients, fourierPoint, recenterSamplePoints, FourierCoefficients)
-import Effects exposing (Effects)
-import Task exposing (map, toMaybe, andThen, succeed)
+import Task exposing (map, andThen, succeed)
 import Time exposing (Time, second, inSeconds)
-import History exposing (setHash)
-import Mouse
 
 
 defaultSampleRange : Int
-defaultSampleRange = 50 
+defaultSampleRange = 50
 
 
-defaultLoopDuration : Time
-defaultLoopDuration = 15 * Time.second
+defaultLoopDuration : Float
+defaultLoopDuration = 5000 
 
 
 computeFourierCoefficientsFromSamples : (Int,Int) -> List (Int,Int) -> FourierCoefficients
 computeFourierCoefficientsFromSamples (width, height) points =
-    let 
+    let
         loopedBackPoints = if (List.length points) <= 1 then
                               points
                            else
@@ -29,7 +26,7 @@ computeFourierCoefficientsFromSamples (width, height) points =
                                   , (case (List.head points) of
                                        Just p -> [p]
                                        Nothing -> [])]
-                               
+
 
         recenteredComplexPoints =
             recenterSamplePoints (List.map Complex.toComplex loopedBackPoints)
@@ -39,19 +36,16 @@ computeFourierCoefficientsFromSamples (width, height) points =
                                    (round ((toFloat (List.length recenteredComplexPoints)) / 5.0))
 
 
-update : Action -> Model -> (Model, Effects Action)
+update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
-        Init time ->
-            (model, Effects.none)
-
         Load encodedModel ->
             let
                 pointList = case (decodePointList encodedModel) of
                                 Err err -> []
                                 Ok points -> points
 
-                newFourierCoefficients = 
+                newFourierCoefficients =
                     computeFourierCoefficientsFromSamples (model.width, model.height)
                                                           pointList
 
@@ -59,11 +53,11 @@ update msg model =
                                points = pointList,
                                fourierCoefficients = newFourierCoefficients }
             in
-                (newModel, Effects.none)
+                (newModel, Cmd.none)
 
         Tick timeDelta ->
             let
-                dt = (Time.inSeconds timeDelta) / (Time.inSeconds defaultLoopDuration)
+                dt = timeDelta / defaultLoopDuration
 
                 newNormalizedClock = advanceNormalizedClock model.normalizedClock dt
 
@@ -76,36 +70,28 @@ update msg model =
                                currentPoint = currentPoint }
 
             in
-                (newModel, Effects.none)
-            
-        AddPoint (x, y) ->
+                (newModel, Cmd.none)
+
+        AddPoint {x, y} ->
             let
                 newPointList = (x, y) :: model.points
 
                 newFourierCoefficients =
                     computeFourierCoefficientsFromSamples (model.width, model.height)
                                                           newPointList
-                                               
+
                 newModel = { model |
                                points = newPointList,
                                fourierCoefficients = newFourierCoefficients }
 
                 encodedPointList = encodePointList newPointList
-
-                effects = (History.setHash encodedPointList) `Task.andThen` (always (Task.succeed encodedPointList))
-                        |> Task.toMaybe
-                        |> Task.map HashUpdated
-                        |> Effects.task
             in
-               (newModel, effects)
+               (newModel, Cmd.none)
 
         Pause ->
-            (model, Effects.none)
+            (model, Cmd.none)
 
         Resume ->
-            (model, Effects.none)
-
-        HashUpdated x ->
-            (model, Effects.none)
+            (model, Cmd.none)
 
 
