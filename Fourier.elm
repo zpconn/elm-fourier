@@ -1,4 +1,12 @@
-module Fourier exposing (computeFourierCoefficients, fourierPoint, FourierCoefficients, Circle(..), computeCirclesFromCoefficients, recenterSamplePoints)
+module Fourier exposing 
+    (computeFourierCoefficients, 
+     fourierPoint, 
+     FourierCoefficients, 
+     Circle(..), 
+     computeCirclesFromCoefficients, 
+     recenterSamplePoints)
+
+
 import Complex exposing (Complex(..))
 
 

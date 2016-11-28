@@ -1,4 +1,15 @@
-module Model exposing (Model, State(..), AnimationState, initial, NormalizedClock(..), clockToFloat, advanceNormalizedClock, encodePointList, decodePointList)
+module Model exposing 
+    (Model, 
+    State(..), 
+    AnimationState, 
+    initial, 
+    NormalizedClock(..), 
+    clockToFloat, 
+    advanceNormalizedClock, 
+    encodePointList, 
+    decodePointList)
+
+
 import Time exposing (Time)
 import String exposing (concat)
 import Json.Encode exposing (encode, object, int, list, Value)

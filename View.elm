@@ -1,4 +1,6 @@
 module View exposing (view)
+
+
 import Color exposing (..)
 import Element exposing (..)
 import Collage exposing (..)
